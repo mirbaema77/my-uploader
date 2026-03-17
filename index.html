@@ -13,33 +13,33 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhudmZjcXZib2ZtYW9lcGVjZGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMjQzMTEsImV4cCI6MjA4NjkwMDMxMX0.sgnOfz3qESKK8wEBQDpNTlvXlLHLEEV4CpvTHpLV3Pk';
     const BUCKET_NAME = 'FMStadio_Training_Drills';
 
-    // ✅ Fix: use supabaseClient (the CDN global), not supabase
-    const supabase = supabaseClient.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // ✅ Named dbClient to avoid clashing with window.supabase
+    const dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    document.getElementById('status').innerText = 'Status: Ready ✅';
 
     async function uploadFile() {
-      const fileInput = document.getElementById('fileInput');
       const status = document.getElementById('status');
-      const file = fileInput.files[0];
+      const file = document.getElementById('fileInput').files[0];
 
       if (!file) {
-        alert("Please select a file first!");
+        alert('Please select a file first!');
         return;
       }
 
-      try {
-        status.innerText = "Status: Uploading...";
+      status.innerText = 'Uploading ' + file.name + '...';
 
-        const { data, error } = await supabase.storage
+      try {
+        const { data, error } = await dbClient.storage
           .from(BUCKET_NAME)
           .upload(file.name, file, { upsert: true });
 
         if (error) throw error;
 
-        status.innerText = "Status: Success! File uploaded.";
-        alert("Success! Check your Supabase bucket.");
+        status.innerText = '✅ Uploaded: ' + file.name;
       } catch (err) {
-        status.innerText = "Status: Error - " + err.message;
-        alert("UPLOAD FAILED: " + err.message);
+        console.error(err);
+        status.innerText = '❌ Error: ' + err.message;
       }
     }
   </script>
