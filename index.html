@@ -1,37 +1,44 @@
 <!DOCTYPE html>
 <html>
+<head><title>Friend Upload</title></head>
 <body>
-  <h2>Upload to My Bucket</h2>
-  <input type="file" id="myFile">
-  <button onclick="upload()">Upload</button>
-  <p id="status"></p>
+  <h2>Upload File to My Bucket</h2>
+  <input type="file" id="fileInput">
+  <button onclick="uploadFile()">Upload</button>
+  <p id="status">Status: Ready</p>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // REPLACE THESE THREE VALUES
+    // PASTE YOUR VALUES HERE
     const supabaseUrl = 'https://xnvfcqvbofmaoepecddx.supabase.co'
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhudmZjcXZib2ZtYW9lcGVjZGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMjQzMTEsImV4cCI6MjA4NjkwMDMxMX0.sgnOfz3qESKK8wEBQDpNTlvXlLHLEEV4CpvTHpLV3Pk'
     const bucketName = 'Training_Drills_Videos_1'
 
-    const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    async function upload() {
-      const fileInput = document.getElementById('myFile')
-      const file = fileInput.files[0]
-      const status = document.getElementById('status')
+    async function uploadFile() {
+      const fileInput = document.getElementById('fileInput');
+      const status = document.getElementById('status');
+      const file = fileInput.files[0];
 
-      if (!file) return alert('Select a file first!')
-      
-      status.innerText = 'Uploading...'
+      if (!file) {
+        alert("Please select a file first!");
+        return;
+      }
+
+      status.innerText = "Status: Uploading...";
 
       const { data, error } = await supabase.storage
-        .from(bucketName)
-        .upload(file.name, file)
+        .from(BUCKET_NAME)
+        .upload(file.name, file, { upsert: true });
 
       if (error) {
-        status.innerText = 'Error: ' + error.message
+        console.error(error);
+        status.innerText = "Error: " + error.message;
+        alert("Upload failed: " + error.message);
       } else {
-        status.innerText = 'Success! File uploaded.'
+        status.innerText = "Status: Success! File uploaded.";
+        alert("File uploaded successfully!");
       }
     }
   </script>
