@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>Upload to My Bucket</h2>
+  <input type="file" id="myFile">
+  <button onclick="upload()">Upload</button>
+  <p id="status"></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // REPLACE THESE THREE VALUES
+    const supabaseUrl = 'https://xnvfcqvbofmaoepecddx.supabase.co'
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhudmZjcXZib2ZtYW9lcGVjZGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMjQzMTEsImV4cCI6MjA4NjkwMDMxMX0.sgnOfz3qESKK8wEBQDpNTlvXlLHLEEV4CpvTHpLV3Pk'
+    const bucketName = 'Training_Drills_Videos_1'
+
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+
+    async function upload() {
+      const fileInput = document.getElementById('myFile')
+      const file = fileInput.files[0]
+      const status = document.getElementById('status')
+
+      if (!file) return alert('Select a file first!')
+      
+      status.innerText = 'Uploading...'
+
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .upload(file.name, file)
+
+      if (error) {
+        status.innerText = 'Error: ' + error.message
+      } else {
+        status.innerText = 'Success! File uploaded.'
+      }
+    }
+  </script>
+</body>
+</html>
