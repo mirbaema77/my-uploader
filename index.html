@@ -7,12 +7,12 @@
   <button onclick="uploadFile()">Upload</button>
   <p id="status">Status: Ready</p>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // MAKE SURE THESE HAVE NO SPACES AROUND THEM
-    const supabaseUrl = 'https://xnvfcqvbofmaoepecddx.supabase.co'
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhudmZjcXZib2ZtYW9lcGVjZGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMjQzMTEsImV4cCI6MjA4NjkwMDMxMX0.sgnOfz3qESKK8wEBQDpNTlvXlLHLEEV4CpvTHpLV3Pk'
-    const bucketName = 'FMStadio_Training_Drills'
+    // These are now correctly named to match the usage below
+    const SUPABASE_URL = 'https://xnvfcqvbofmaoepecddx.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhudmZjcXZib2ZtYW9lcGVjZGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMjQzMTEsImV4cCI6MjA4NjkwMDMxMX0.sgnOfz3qESKK8wEBQDpNTlvXlLHLEEV4CpvTHpLV3Pk';
+    const BUCKET_NAME = 'FMStadio_Training_Drills';
 
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -28,23 +28,19 @@
 
       try {
         status.innerText = "Status: Attempting upload...";
-        console.log("Starting upload for:", file.name);
-
+        
+        // This sends the file to Supabase
         const { data, error } = await supabase.storage
           .from(BUCKET_NAME)
           .upload(file.name, file, { 
-            upsert: true,
-            cacheControl: '3600' 
+            upsert: true 
           });
 
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
 
         status.innerText = "Status: Success! File uploaded.";
         alert("Success! Check your Supabase bucket.");
       } catch (err) {
-        console.error("Full Error Object:", err);
         status.innerText = "Status: Error - " + err.message;
         alert("UPLOAD FAILED: " + err.message);
       }
