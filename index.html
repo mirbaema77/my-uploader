@@ -9,7 +9,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // PASTE YOUR VALUES HERE
+    // MAKE SURE THESE HAVE NO SPACES AROUND THEM
     const supabaseUrl = 'https://xnvfcqvbofmaoepecddx.supabase.co'
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhudmZjcXZib2ZtYW9lcGVjZGR4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMjQzMTEsImV4cCI6MjA4NjkwMDMxMX0.sgnOfz3qESKK8wEBQDpNTlvXlLHLEEV4CpvTHpLV3Pk'
     const bucketName = 'FMStadio_Training_Drills'
@@ -26,19 +26,27 @@
         return;
       }
 
-      status.innerText = "Status: Uploading...";
+      try {
+        status.innerText = "Status: Attempting upload...";
+        console.log("Starting upload for:", file.name);
 
-      const { data, error } = await supabase.storage
-        .from(BUCKET_NAME)
-        .upload(file.name, file, { upsert: true });
+        const { data, error } = await supabase.storage
+          .from(BUCKET_NAME)
+          .upload(file.name, file, { 
+            upsert: true,
+            cacheControl: '3600' 
+          });
 
-      if (error) {
-        console.error(error);
-        status.innerText = "Error: " + error.message;
-        alert("Upload failed: " + error.message);
-      } else {
+        if (error) {
+          throw error;
+        }
+
         status.innerText = "Status: Success! File uploaded.";
-        alert("File uploaded successfully!");
+        alert("Success! Check your Supabase bucket.");
+      } catch (err) {
+        console.error("Full Error Object:", err);
+        status.innerText = "Status: Error - " + err.message;
+        alert("UPLOAD FAILED: " + err.message);
       }
     }
   </script>
